@@ -1,0 +1,450 @@
+/* EduSphere Modern Blue/Orange Design System */
+:root {
+    /* Brand Primary - Modern Blue */
+    --primary: #3B82F6;
+    --primary-hover: #2563EB;
+    --primary-soft: rgba(59, 130, 246, 0.1);
+    
+    /* Brand Accent - Energetic Orange */
+    --accent: #F97316;
+    --accent-hover: #EA580C;
+    --accent-soft: rgba(249, 115, 22, 0.1);
+    
+    /* Neutral Dark Palette (Default Theme) */
+    --bg-main: #0F172A;
+    --bg-surface: #1E293B;
+    --bg-section: #020617;
+    --border-base: #334155;
+    
+    /* Typography */
+    --text-main: #F1F5F9;
+    --text-muted: #94A3B8;
+    --text-inverse: #0F172A;
+
+    /* Semantic */
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --info: #0EA5E9;
+
+    /* Spacing & Utilities */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --radius: 12px;
+    --transition: all 0.2s ease;
+}
+
+[data-theme="light"] {
+    --bg-main: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --bg-section: #F1F5F9;
+    --border-base: #E2E8F0;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --text-inverse: #FFFFFF;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Base resets */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+}
+
+/* Layout */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-base);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.main-content {
+    margin-left: 260px;
+    padding: 2.5rem;
+    min-height: 100vh;
+}
+
+/* Cards - SaaS Minimal style */
+.dashboard-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-base);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.dashboard-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+}
+
+/* Stats Styling */
+.stat-pill {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-label {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.stat-number {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+/* Nav Links */
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--text-muted);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.nav-link.active {
+    background: var(--primary);
+    color: white;
+}
+
+.nav-link i, .nav-link svg {
+    margin-right: 0.75rem;
+    width: 18px;
+}
+
+/* Buttons */
+.btn-primary-clean {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.btn-primary-clean:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    color: white;
+}
+
+.btn-accent {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.btn-accent:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-1px);
+    color: white;
+}
+
+/* Premium Tables - Redesigned for SaaS */
+.saas-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.saas-table thead th {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-base);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.saas-table tbody tr {
+    border-bottom: 1px solid var(--border-base);
+    transition: var(--transition);
+}
+
+.saas-table tbody tr:hover {
+    background-color: var(--primary-soft);
+}
+
+.saas-table td {
+    padding: 1.25rem 1rem;
+    font-size: 0.95rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Forms */
+.form-control-saas {
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-base);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+.form-control-saas:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+    outline: none;
+}
+
+/* Utility Animations */
+.fade-up {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   PRODUCTION SLIDING OVERLAY AUTH UI (Dual Panel)
+   ========================================================================== */
+.auth-page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-main);
+    padding: 2rem;
+}
+
+.sliding-auth-box {
+    background-color: var(--bg-surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-base);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+    width: 1000px;
+    max-width: 100%;
+    min-height: 650px;
+    display: flex;
+}
+
+/* Form Containers */
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+    padding: 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--bg-surface);
+}
+
+.sign-in-container {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+
+.sign-up-container {
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+.sliding-auth-box.right-panel-active .sign-in-container {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.sliding-auth-box.right-panel-active .sign-up-container {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: showEffect 0.6s;
+}
+
+@keyframes showEffect {
+    0%, 49.99% { opacity: 0; z-index: 1; }
+    50%, 100% { opacity: 1; z-index: 5; }
+}
+
+/* Overlay Section */
+.overlay-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out;
+    z-index: 100;
+}
+
+.sliding-auth-box.right-panel-active .overlay-container {
+    transform: translateX(-100%);
+}
+
+.overlay {
+    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: #FFFFFF;
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+    display: flex;
+}
+
+.sliding-auth-box.right-panel-active .overlay {
+    transform: translateX(50%);
+}
+
+.overlay-panel {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    text-align: center;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+}
+
+.overlay-left { transform: translateX(-20%); }
+.sliding-auth-box.right-panel-active .overlay-left { transform: translateX(0); }
+
+.overlay-right { right: 0; transform: translateX(0); }
+.sliding-auth-box.right-panel-active .overlay-right { transform: translateX(20%); }
+
+/* Input adjustments within Auth Box */
+.sliding-auth-box input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border-base);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    color: var(--text-main);
+}
+
+.sliding-auth-box input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* Mobile Adaptive Mode */
+@media (max-width: 991px) {
+    .sliding-auth-box { flex-direction: column; width: 100%; max-width: 450px; min-height: auto; }
+    .overlay-container { display: none; }
+    .form-container { position: relative; width: 100% !important; opacity: 1 !important; transform: none !important; padding: 2.5rem 2rem; }
+    .sign-up-container { display: none; }
+    .sliding-auth-box.mobile-sign-up .sign-in-container { display: none; }
+    .sliding-auth-box.mobile-sign-up .sign-up-container { display: block; }
+    
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 1.5rem;
+    }
+}
+
+/* Legacy Support (Mapping glass-card to dashboard-card for safety) */
+.glass-card { 
+    background: var(--bg-surface); 
+    border: 1px solid var(--border-base); 
+    border-radius: var(--radius); 
+    padding: 1.5rem; 
+    box-shadow: var(--shadow-sm);
+}
+.dashboard-mesh { background: var(--bg-main) !important; animation: none !important; }
+.btn-premium { 
+    background-color: var(--primary) !important; 
+    box-shadow: var(--shadow-md) !important; 
+    border: none !important;
+}
+.stat-value { 
+    background: none !important; 
+    -webkit-text-fill-color: var(--text-main) !important; 
+    filter: none !important; 
+}
+.premium-table tbody tr { background: none !important; border-bottom: 1px solid var(--border-base); }
+.premium-table td { background: none !important; }
+
+/* Custom Utility Classes */
+.text-main { color: var(--text-main) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-inverse { color: var(--text-inverse) !important; }
+
+.bg-main { background-color: var(--bg-main) !important; }
+.bg-surface { background-color: var(--bg-surface) !important; }
+.bg-section { background-color: var(--bg-section) !important; }
+
+.border-base { border-color: var(--border-base) !important; }
+
+/* Custom Opacities for Bootstrap */
+.bg-opacity-5 { --bs-bg-opacity: 0.05; }
+.bg-opacity-10 { --bs-bg-opacity: 0.10; }
+.bg-opacity-15 { --bs-bg-opacity: 0.15; }
+.bg-opacity-20 { --bs-bg-opacity: 0.20; }
+
+/* Semantic Text Colors */
+.text-danger { color: var(--danger) !important; }
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-info { color: var(--info) !important; }
+.text-primary { color: var(--primary) !important; }
+
+

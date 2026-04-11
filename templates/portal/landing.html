@@ -1,0 +1,169 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}EduSphere - Smart Campus Portal{% endblock %}
+
+{% block body_class %}bg-section{% endblock %}
+
+{% block content %}
+<!-- Landing Navigation -->
+<nav class="navbar navbar-expand-lg border-bottom border-base py-3 sticky-top" style="background-color: var(--bg-main);">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <div class="bg-primary p-2 rounded-3 me-3 text-white shadow-sm">
+                <i data-lucide="graduation-cap"></i>
+            </div>
+            <span class="fw-800 tracking-tight text-main h5 mb-0">EduSphere</span>
+        </a>
+        <button class="navbar-toggler border-0 shadow-none text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+            <i data-lucide="menu"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="landingNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-600 font-size-sm">
+                <li class="nav-item"><a class="nav-link px-3 text-muted" href="#features">Features</a></li>
+                <li class="nav-item"><a class="nav-link px-3 text-muted" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link px-3 text-muted" href="#contact">Contact</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'login' %}" class="btn btn-link text-main text-decoration-none fw-700 px-3">Sign In</a>
+                <a href="{% url 'login' %}?mode=signup" class="btn btn-accent px-4 shadow-sm">Get Started</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="py-5" style="background-color: var(--bg-section);">
+    <div class="container py-lg-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 text-center text-lg-start">
+                <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-800 mb-4 tracking-wider small">
+                    <span class="text-accent me-2">●</span> NEXT GEN CAMPUS SYSTEM
+                </div>
+                <h1 class="display-4 fw-800 text-main mb-4 leading-tight">
+                    Manage your institution with <span class="text-primary">absolute clarity.</span>
+                </h1>
+                <p class="lead text-muted fw-500 mb-5 pe-lg-4" style="font-size: 1.15rem;">
+                    EduSphere provides a single source of truth for administration, attendance, and student grievances. Minimalist design. Maximum efficiency.
+                </p>
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                    <a href="{% url 'login' %}?mode=signup" class="btn btn-accent px-5 py-3 shadow-md fw-800" style="font-size: 1.1rem;">
+                        Start Free Trial <i data-lucide="arrow-right" class="ms-2" style="width: 20px;"></i>
+                    </a>
+                    <a href="#features" class="btn btn-outline-secondary border-base bg-main text-main px-5 py-3 fw-700 shadow-sm transition hover-bg-primary-soft">
+                        Explore Features
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="dashboard-card border-0 shadow-lg p-2 rounded-4" style="background: linear-gradient(145deg, var(--bg-surface), var(--bg-main));">
+                    <div class="dashboard-card bg-main m-0 p-4 border border-base">
+                        <div class="d-flex justify-content-between align-items-center border-bottom border-base pb-3 mb-4">
+                            <div class="d-flex gap-2">
+                                <div class="bg-danger rounded-circle" style="width: 10px; height: 10px;"></div>
+                                <div class="bg-warning rounded-circle" style="width: 10px; height: 10px;"></div>
+                                <div class="bg-success rounded-circle" style="width: 10px; height: 10px;"></div>
+                            </div>
+                            <span class="small fw-700 text-muted">Admin Panel Preview</span>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="bg-surface border border-base p-3 rounded-3">
+                                    <div class="small fw-700 text-muted text-uppercase tracking-wider mb-2" style="font-size: 0.65rem;">Active Students</div>
+                                    <div class="h3 fw-800 text-main mb-0">1,245</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-surface border border-base p-3 rounded-3">
+                                    <div class="small fw-700 text-muted text-uppercase tracking-wider mb-2" style="font-size: 0.65rem;">Pending Issues</div>
+                                    <div class="h3 fw-800 text-accent mb-0">12</div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 fw-700 d-flex justify-content-between align-items-center">
+                                    <span>System Health</span>
+                                    <span class="badge bg-primary text-white">Optimal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-main border-top border-base">
+    <div class="container py-lg-5">
+        <div class="text-center mb-5 pb-lg-3">
+            <h2 class="fw-800 text-main h1 mb-3">Everything you need to scale</h2>
+            <p class="text-muted fw-500 lead max-w-md mx-auto">Skip the complicated spreadsheets. Our tools are designed for immediate productivity.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="dashboard-card h-100 text-center p-5 hover-border-primary transition">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 d-inline-block mb-4 shadow-sm">
+                        <i data-lucide="check-square" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h5 class="fw-800 text-main mb-3">Smart Roll Calls</h5>
+                    <p class="text-muted small fw-500 leading-relaxed max-w-sm mx-auto">Mark attendance rapidly using our optimized interface, instantly syncing data to student portals.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="dashboard-card h-100 text-center p-5 border-primary border-opacity-50" style="transform: scale(1.05); z-index: 10;">
+                    <div class="bg-accent bg-opacity-10 text-accent p-3 rounded-3 d-inline-block mb-4 shadow-sm">
+                        <i data-lucide="shield-alert" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h5 class="fw-800 text-main mb-3">Automated Grievances</h5>
+                    <p class="text-muted small fw-500 leading-relaxed max-w-sm mx-auto">Centralize all student complaints into a unified registry that is trackable, actionable, and secure.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="dashboard-card h-100 text-center p-5 hover-border-primary transition">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 d-inline-block mb-4 shadow-sm">
+                        <i data-lucide="pie-chart" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h5 class="fw-800 text-main mb-3">Real-time Analytics</h5>
+                    <p class="text-muted small fw-500 leading-relaxed max-w-sm mx-auto">Live dashboards provide administrative overview and deep demographic insights instantly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-4 border-top border-base" style="background-color: var(--bg-surface);">
+    <div class="container text-center text-md-start d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+            <i data-lucide="graduation-cap" class="text-muted" style="width: 20px;"></i>
+            <span class="fw-700 text-main h6 mb-0">EduSphere</span>
+        </div>
+        <div class="small text-muted fw-600">
+            &copy; {% now "Y" %} EduSphere Portal. All rights reserved.
+        </div>
+        <div class="d-flex gap-3">
+            <a href="#" class="text-muted hover-text-primary transition"><i data-lucide="twitter" style="width: 20px;"></i></a>
+            <a href="#" class="text-muted hover-text-primary transition"><i data-lucide="github" style="width: 20px;"></i></a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // In landing page, we don't want the default body padding meant for authenticated navigation.
+    document.addEventListener("DOMContentLoaded", function() {
+        lucide.createIcons();
+    });
+</script>
+
+<style>
+    /* Prevent base.html from showing Sidebar or top margin for unauthenticated landing view */
+    .sidebar { display: none !important; }
+    .main-content { margin-left: 0 !important; padding: 0 !important; }
+    header.d-lg-none { display: none !important; }
+    .fade-up { max-width: 100vw; overflow-x: hidden; }
+</style>
+{% endblock %}

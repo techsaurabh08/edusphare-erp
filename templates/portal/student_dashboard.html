@@ -1,0 +1,161 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}Student Dashboard - EduSphere{% endblock %}
+
+{% block page_title %}Academic Insights{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- Section: Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-pill bg-primary bg-opacity-10 text-primary me-3">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                    <span class="stat-label">Overall Attendance</span>
+                </div>
+                <div class="stat-number">{{ attendance_percentage }}%</div>
+                <div class="mt-2">
+                    <div class="progress rounded-pill bg-light" style="height: 6px;">
+                        <div class="progress-bar bg-primary" style="width: {{ attendance_percentage }}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-pill bg-warning bg-opacity-10 text-warning me-3">
+                        <i data-lucide="clock"></i>
+                    </div>
+                    <span class="stat-label">Pending Grievances</span>
+                </div>
+                <div class="stat-number">{{ grievances.count }}</div>
+                <div class="mt-2 small text-muted fw-600">Active Support Requests</div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-12">
+            <div class="dashboard-card h-100 bg-surface border-primary shadow-sm border-2">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary text-white p-2 rounded-2 me-3">
+                        <i data-lucide="plus"></i>
+                    </div>
+                    <h6 class="mb-0 fw-800 text-main">New Report</h6>
+                </div>
+                <p class="small text-muted mb-4">Need assistance or found an issue? Submit a formal grievance to campus administration.</p>
+                <a href="{% url 'submit_grievance' %}" class="btn btn-primary-clean w-100 py-3">Submit Grievance</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Attendance Analytics -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="dashboard-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-base">
+                    <h5 class="mb-0 fw-700 text-main h6 text-uppercase tracking-wider">Attendance Breakdown</h5>
+                    <div class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 fw-700">Live Status</div>
+                </div>
+                
+                <div class="py-4 d-flex justify-content-center align-items-center" style="min-height: 350px;">
+                    <canvas id="studentAttendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="dashboard-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-base">
+                    <h5 class="mb-0 fw-700 text-main h6 text-uppercase tracking-wider">Session Summary</h5>
+                </div>
+                
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-center justify-content-between p-3 bg-main rounded-3 mb-3 border border-base">
+                        <div class="d-flex align-items-center">
+                            <i data-lucide="check" class="text-success me-3" style="width: 18px;"></i>
+                            <span class="small fw-700 text-main">Days Present</span>
+                        </div>
+                        <span class="fw-800 text-main">{{ present_count }}</span>
+                    </li>
+                    <li class="d-flex align-items-center justify-content-between p-3 bg-main rounded-3 mb-3 border border-base">
+                        <div class="d-flex align-items-center">
+                            <i data-lucide="x" class="text-danger me-3" style="width: 18px;"></i>
+                            <span class="small fw-700 text-main">Days Absent</span>
+                        </div>
+                        <span class="fw-800 text-main">{{ absent_count }}</span>
+                    </li>
+                    <li class="d-flex align-items-center justify-content-between p-3 bg-main rounded-3 border border-base">
+                        <div class="d-flex align-items-center">
+                            <i data-lucide="activity" class="text-primary me-3" style="width: 18px;"></i>
+                            <span class="small fw-700 text-main">Total Records</span>
+                        </div>
+                        <span class="fw-800 text-main">{{ total_count }}</span>
+                    </li>
+                </ul>
+                
+                <div class="alert bg-primary bg-opacity-5 border-0 text-primary rounded-3 mt-5 p-4 mb-0">
+                    <div class="d-flex gap-3">
+                        <i data-lucide="info" class="mt-1" style="width: 18px;"></i>
+                        <div>
+                            <div class="fw-800 small mb-1">Academic Info</div>
+                            <div class="small fw-500 opacity-75">Maintain at least 75% attendance to stay eligible for final examinations.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ctx = document.getElementById('studentAttendanceChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Present', 'Absent'],
+            datasets: [{
+                data: [{{ present_count }}, {{ absent_count }}],
+                backgroundColor: ['#4f46e5', '#e2e8f0'],
+                borderColor: '#ffffff',
+                borderWidth: 6,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '80%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#64748b',
+                        padding: 30,
+                        usePointStyle: true,
+                        font: { family: 'Inter', size: 12, weight: '700' }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    padding: 15,
+                    cornerRadius: 8,
+                    titleFont: { family: 'Inter', size: 14, weight: 'bold' },
+                    bodyFont: { family: 'Inter', size: 12 },
+                    displayColors: false
+                }
+            }
+        }
+    });
+
+    lucide.createIcons();
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}Submit Request - EduSphere{% endblock %}
+
+{% block page_title %}New Grievance Request{% endblock %}
+{% block breadcrumb %}Submit Grievance{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-6">
+            <div class="dashboard-card shadow-sm border border-base">
+                <div class="text-center mb-5">
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle d-inline-block mb-3">
+                        <i data-lucide="edit-3" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h2 class="fw-800 text-main h4">Formal Assistance Request</h2>
+                    <p class="text-muted small fw-500">Please provide accurate details to ensure timely resolution.</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="category" class="form-label fw-700 small text-uppercase tracking-wider text-muted mb-2">Inquiry Category</label>
+                        <select name="category" id="category" class="form-select form-control-saas fw-600" required>
+                            <option value="Academic">Academic Affairs</option>
+                            <option value="Facility">Campus Facilities</option>
+                            <option value="Others">Administrative / Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="message" class="form-label fw-700 small text-uppercase tracking-wider text-muted mb-2">Detailed Description</label>
+                        <textarea name="message" id="message" class="form-control form-control-saas fw-600" rows="6" placeholder="Describe your grievance clearly..." required></textarea>
+                        <div class="form-text small fw-500 text-muted opacity-75 mt-2">Maximum 1000 characters allowed.</div>
+                    </div>
+
+                    <div class="p-3 bg-main border border-base rounded-3 mb-5">
+                        <div class="form-check form-switch d-flex align-items-center gap-3">
+                            <input class="form-check-input mb-0" type="checkbox" name="is_anonymous" id="is_anonymous" style="width: 2.5rem; height: 1.25rem;">
+                            <label class="form-check-label fw-700 text-main small mb-0" for="is_anonymous">
+                                Identity Concealment (Anonymous Submission)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary-clean py-3 fw-800 shadow-sm">
+                            <i data-lucide="send" class="me-2" style="width: 18px;"></i> Dispatch Request
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-link text-muted text-decoration-none small fw-700 mt-2">Cancel & Return</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

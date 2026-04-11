@@ -1,0 +1,101 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}Teacher Dashboard - EduSphere{% endblock %}
+
+{% block page_title %}Academic Overview{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- Section: Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-pill bg-primary bg-opacity-10 text-primary me-3">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <span class="stat-label">Assigned Students</span>
+                </div>
+                <div class="stat-number">42</div>
+                <div class="mt-2 small text-muted fw-600">Active Registry</div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-pill bg-success bg-opacity-10 text-success me-3">
+                        <i data-lucide="calendar"></i>
+                    </div>
+                    <span class="stat-label">Attendance Rate</span>
+                </div>
+                <div class="stat-number">94.2%</div>
+                <div class="mt-2 small text-success fw-600">
+                    <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i> High Engagement
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-12">
+            <div class="dashboard-card h-100 bg-primary text-white border-0 shadow-sm">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-white bg-opacity-20 p-2 rounded-2 me-3">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <h6 class="mb-0 fw-700">Quick Actions</h6>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'mark_attendance' %}" class="btn btn-light btn-sm flex-fill fw-700 py-2">Mark Attendance</a>
+                    <a href="{% url 'view_grievances' %}" class="btn btn-outline-light btn-sm flex-fill fw-700 py-2">Monitor Case</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Student Registry -->
+    <div class="dashboard-card">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-base">
+            <h5 class="mb-0 fw-700 text-main h6 text-uppercase tracking-wider">Student Registry</h5>
+            <button class="btn btn-link text-primary p-0 fw-700 text-decoration-none small">Export CSV</button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="saas-table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Identifier</th>
+                        <th>Email</th>
+                        <th class="text-end">Reporting</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary bg-opacity-10 text-primary rounded-pill fw-700 d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                    {{ student.username|first|upper }}
+                                </div>
+                                <span class="fw-700 text-main">{{ student.get_full_name|default:student.username }}</span>
+                            </div>
+                        </td>
+                        <td><span class="text-muted fw-600">ID: #{{ student.id|add:1000 }}</span></td>
+                        <td class="text-muted">{{ student.email|default:"no-email@campus.io" }}</td>
+                        <td class="text-end">
+                            <button class="btn btn-outline-secondary btn-sm border-base px-3 fw-600">Record</button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted opacity-50">No students found in your registry.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

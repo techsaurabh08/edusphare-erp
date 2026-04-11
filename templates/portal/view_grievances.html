@@ -1,0 +1,87 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}Grievance Registry - EduSphere{% endblock %}
+
+{% block page_title %}Institutional Registry{% endblock %}
+{% block breadcrumb %}Grievances{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="dashboard-card p-0 overflow-hidden">
+        <div class="px-4 py-4 border-bottom border-base d-flex justify-content-between align-items-center bg-surface">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-2">
+                    <i data-lucide="list"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-800 text-main">Complaint Records</h6>
+                    <p class="text-muted small mb-0 fw-600">Track and manage student-submitted grievances.</p>
+                </div>
+            </div>
+            {% if not user.is_staff and user.groups.all.0.name != 'Teachers' %}
+            <a href="{% url 'submit_grievance' %}" class="btn btn-primary-clean btn-sm px-4 fw-700">
+                <i data-lucide="plus" class="me-1" style="width: 16px;"></i> Create Request
+            </a>
+            {% endif %}
+        </div>
+        
+        <div class="table-responsive">
+            <table class="saas-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4">{% if user.is_staff or user.groups.all.0.name == 'Teachers' %}Reporter / Category{% else %}Category{% endif %}</th>
+                        <th>Brief Description</th>
+                        <th class="text-center">Current Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grievance in grievances %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                {% if user.is_staff or user.groups.all.0.name == 'Teachers' %}
+                                <div class="avatar-sm bg-primary bg-opacity-10 text-primary rounded-circle me-3 d-flex align-items-center justify-content-center fw-800" style="width: 36px; height: 36px; font-size: 0.75rem;">
+                                    {% if grievance.is_anonymous %}?{% else %}{{ grievance.student.username|first|upper }}{% endif %}
+                                </div>
+                                <div>
+                                    <div class="fw-700 text-main mb-0 small">{% if grievance.is_anonymous %}Anonymous{% else %}{{ grievance.student.get_full_name|default:grievance.student.username }}{% endif %}</div>
+                                    <div class="fw-700 text-primary" style="font-size: 0.75rem;">{{ grievance.category }}</div>
+                                </div>
+                                {% else %}
+                                <div class="fw-700 text-primary">{{ grievance.category }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="text-muted fw-600">
+                            <span class="d-inline-block text-truncate small" style="max-width: 400px;">{{ grievance.message }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge rounded-pill fw-700 px-3 py-2 border
+                                {% if grievance.status == 'Pending' %}border-danger text-danger bg-danger bg-opacity-10
+                                {% elif grievance.status == 'In Progress' %}border-warning text-warning bg-warning bg-opacity-10
+                                {% else %}border-success text-success bg-success bg-opacity-10{% endif %}" style="min-width: 100px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                {{ grievance.status }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'grievance_detail' grievance.pk %}" class="btn btn-outline-secondary btn-sm border-base px-3 fw-600">
+                                {% if user.is_staff or user.groups.all.0.name == 'Teachers' %}Review{% else %}Details{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted opacity-50">
+                            <i data-lucide="inbox" class="mb-3 d-block mx-auto" style="width: 40px; height: 40px;"></i>
+                            No grievances currently in the registry.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

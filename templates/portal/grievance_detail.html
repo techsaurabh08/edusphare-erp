@@ -1,0 +1,131 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}Grievance Details - EduSphere{% endblock %}
+
+{% block page_title %}Grievance Registry{% endblock %}
+{% block breadcrumb %}Details{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="row g-4">
+        <!-- Main Details / Thread -->
+        <div class="col-lg-8">
+            <div class="dashboard-card mb-4" style="min-height: 500px; display: flex; flex-direction: column;">
+                <div class="d-flex justify-content-between align-items-start mb-4 pb-3 border-bottom border-base">
+                    <div>
+                        <h5 class="mb-1 fw-800 text-main">{{ grievance.category }} Grievance</h5>
+                        <div class="text-muted small fw-600">
+                            Submitted by: <span class="text-primary">{% if grievance.is_anonymous and not is_staff %}Anonymous{% else %}{{ grievance.student.get_full_name|default:grievance.student.username }}{% endif %}</span>
+                            &bull; {{ grievance.created_at|date:"M d, Y h:i A" }}
+                        </div>
+                    </div>
+                    <span class="badge rounded-pill fw-700 px-3 py-2 border
+                        {% if grievance.status == 'Pending' %}border-danger text-danger bg-danger bg-opacity-10
+                        {% elif grievance.status == 'In Progress' %}border-warning text-warning bg-warning bg-opacity-10
+                        {% else %}border-success text-success bg-success bg-opacity-10{% endif %}" style="min-width: 100px; font-size: 0.65rem; text-transform: uppercase;">
+                        {{ grievance.status }}
+                    </span>
+                </div>
+
+                <!-- Original Message -->
+                <div class="bg-primary bg-opacity-10 rounded-3 p-4 mb-4 border border-primary border-opacity-10">
+                    <p class="mb-0 fw-600 text-main opacity-90 leading-relaxed">{{ grievance.message }}</p>
+                </div>
+
+                <div class="border-top border-base my-2"></div>
+                <h6 class="small fw-800 text-uppercase tracking-wider text-muted my-3">Discussion Thread</h6>
+
+                <!-- Thread -->
+                <div class="flex-grow-1 overflow-auto d-flex flex-column gap-3 mb-4 pe-2" style="max-height: 400px;">
+                    {% for response in responses %}
+                    <div class="d-flex {% if response.user == request.user %}flex-row-reverse{% endif %} gap-3">
+                        <div class="avatar-sm bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center fw-800" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                            {{ response.user.username|first|upper }}
+                        </div>
+                        <div class="bg-surface border border-base rounded-3 p-3" style="max-width: 80%;">
+                            <div class="d-flex justify-content-between align-items-center mb-1 gap-4">
+                                <span class="small fw-700 text-main">
+                                    {% if response.user == grievance.student and grievance.is_anonymous and not is_staff %}
+                                        Anonymous
+                                    {% else %}
+                                        {{ response.user.get_full_name|default:response.user.username }}
+                                    {% endif %}
+                                    {% if response.user.is_staff or response.user.groups.all.0.name == 'Teachers' %}
+                                        <i data-lucide="shield-check" class="text-primary ms-1" style="width: 14px;"></i>
+                                    {% endif %}
+                                </span>
+                                <span class="text-muted" style="font-size: 0.65rem;">{{ response.created_at|date:"M d, h:i A" }}</span>
+                            </div>
+                            <p class="mb-0 small fw-500 text-main opacity-85">{{ response.message }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted opacity-50">
+                        <i data-lucide="message-square-dashed" class="mb-2" style="width: 32px;"></i>
+                        <p class="small fw-600 mb-0">No responses yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Response -->
+                {% if grievance.status != 'Resolved' %}
+                <form method="post" class="mt-auto">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_response">
+                    <div class="input-group">
+                        <input type="text" name="message" class="form-control form-control-saas" placeholder="Type your response..." required autocomplete="off">
+                        <button type="submit" class="btn btn-primary-clean fw-700 px-4">Send</button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert bg-success bg-opacity-10 border-0 text-success rounded-3 mt-auto mb-0 p-3 text-center small fw-700">
+                    This grievance has been resolved and closed for new responses.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar / Admin Actions -->
+        <div class="col-lg-4">
+            {% if is_staff %}
+            <div class="dashboard-card mb-4">
+                <h6 class="mb-4 fw-800 text-main">Update Status</h6>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_status">
+                    <div class="mb-3">
+                        <select name="status" class="form-select form-control-saas fw-600">
+                            <option value="Pending" {% if grievance.status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="In Progress" {% if grievance.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                            <option value="Resolved" {% if grievance.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary w-100 fw-700">Update Status</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="dashboard-card">
+                <h6 class="mb-3 fw-800 text-main">Grievance Info</h6>
+                <div class="d-flex flex-column gap-3">
+                    <div>
+                        <div class="small fw-700 text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Grievance ID</div>
+                        <div class="fw-700 text-main">#{{ grievance.pk|stringformat:"04d" }}</div>
+                    </div>
+                    <div>
+                        <div class="small fw-700 text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Category</div>
+                        <div class="fw-700 text-main">{{ grievance.category }}</div>
+                    </div>
+                    {% if not grievance.is_anonymous or is_staff %}
+                    <div>
+                        <div class="small fw-700 text-muted text-uppercase tracking-wider" style="font-size: 0.65rem;">Reporter Contact</div>
+                        <div class="fw-700 text-main">{{ grievance.student.email|default:"N/A" }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
