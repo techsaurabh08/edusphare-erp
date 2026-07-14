@@ -8,154 +8,325 @@
 
 {% block content %}
 <div class="animate-fade-in">
-    <!-- Section: Stats -->
-    <div class="row g-4 mb-5">
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="stat-pill bg-primary bg-opacity-10 text-primary me-3">
-                        <i data-lucide="check-circle"></i>
-                    </div>
-                    <span class="stat-label">Overall Attendance</span>
-                </div>
-                <div class="stat-number">{{ attendance_percentage }}%</div>
-                <div class="mt-2">
-                    <div class="progress rounded-pill bg-light" style="height: 6px;">
-                        <div class="progress-bar bg-primary" style="width: {{ attendance_percentage }}%;"></div>
-                    </div>
-                </div>
-            </div>
+    <!-- Welcome Header -->
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h1 class="h3 fw-800 text-main mb-1">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <p class="text-muted mb-0">Here's what's happening with your academics today.</p>
         </div>
-        
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="stat-pill bg-warning bg-opacity-10 text-warning me-3">
-                        <i data-lucide="clock"></i>
-                    </div>
-                    <span class="stat-label">Pending Grievances</span>
-                </div>
-                <div class="stat-number">{{ grievances.count }}</div>
-                <div class="mt-2 small text-muted fw-600">Active Support Requests</div>
-            </div>
-        </div>
-
-        <div class="col-xl-4 col-md-12">
-            <div class="dashboard-card h-100 bg-surface border-primary shadow-sm border-2">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="bg-primary text-white p-2 rounded-2 me-3">
-                        <i data-lucide="plus"></i>
-                    </div>
-                    <h6 class="mb-0 fw-800 text-main">New Report</h6>
-                </div>
-                <p class="small text-muted mb-4">Need assistance or found an issue? Submit a formal grievance to campus administration.</p>
-                <a href="{% url 'submit_grievance' %}" class="btn btn-primary-clean w-100 py-3">Submit Grievance</a>
+        <div class="d-none d-md-block">
+            <div class="text-muted small fw-600 mb-1 text-end">Last Updated</div>
+            <div class="badge bg-surface border border-base text-main rounded-pill px-3 py-2 fw-700">
+                <i data-lucide="clock" class="me-1" style="width:14px;"></i> Just Now
             </div>
         </div>
     </div>
 
-    <!-- Section: Attendance Analytics -->
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="dashboard-card h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-base">
-                    <h5 class="mb-0 fw-700 text-main h6 text-uppercase tracking-wider">Attendance Breakdown</h5>
-                    <div class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 fw-700">Live Status</div>
+    <!-- Live Attendance Check-in Widget -->
+    {% if active_session %}
+    <div class="dashboard-card-premium mb-5 p-4 border-0 shadow-lg bg-surface"
+        style="border-left: 5px solid var(--primary) !important;">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-4">
+                    <div class="bg-primary text-white p-3 rounded-circle shadow-sm">
+                        <i data-lucide="map-pin" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-800 text-main mb-1">Live Attendance: {{ active_session.subject.name }}</h5>
+                        <p class="text-muted small mb-0 fw-600">Enter the 4-digit code provided by your teacher to check
+                            in.</p>
+                    </div>
                 </div>
-                
-                <div class="py-4 d-flex justify-content-center align-items-center" style="min-height: 350px;">
-                    <canvas id="studentAttendanceChart"></canvas>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <form action="{% url 'student_checkin' %}" method="POST" class="d-flex gap-2 justify-content-lg-end">
+                    {% csrf_token %}
+                    <input type="text" id="attendanceCode" name="session_code" 
+                        class="form-control text-center fw-bold" 
+                        placeholder="Attendance Code (Auto Generated)" 
+                        readonly>
+                    <button type="submit" class="btn btn-primary px-4 fw-800 rounded-3 shadow-sm">Check In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section: Core Stats Row -->
+    <div class="row g-4 mb-5">
+        <!-- Attendance Overview -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card-premium h-100">
+                <div class="d-flex justify-content-between mb-4">
+                    <div class="stat-pill bg-{{ status }}-soft">
+                        <i
+                            data-lucide="{% if status == 'success' %}check-circle{% elif status == 'warning' %}alert-circle{% else %}alert-triangle{% endif %}"></i>
+                    </div>
+                    <div class="text-end">
+                        <div class="stat-label">Attendance</div>
+                        <div class="stat-number">{{ attendance_percentage }}%</div>
+                    </div>
+                </div>
+
+                <div class="progress progress-thin mb-3">
+                    <div class="progress-bar bg-{{ status }}" style="width: {{ attendance_percentage }}%;"></div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="small fw-700 text-{{ status }}">
+                        {{ status_label }}
+                    </span>
+                    <span class="small text-muted fw-600">{{ present_count }}/{{ total_count }} Classes</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Pending Grievances -->
+        <div class="col-xl-4 col-md-6">
+            <div class="dashboard-card-premium h-100">
+                <div class="d-flex justify-content-between mb-4">
+                    <div class="stat-pill bg-warning-soft">
+                        <i data-lucide="message-square"></i>
+                    </div>
+                    <div class="text-end">
+                        <div class="stat-label">Support</div>
+                        <div class="stat-number">{{ pending_count }}</div>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="small fw-700 text-main mb-1">Pending Grievances</div>
+                    <p class="small text-muted mb-0">Active request tickets under review.</p>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="dashboard-card h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-base">
-                    <h5 class="mb-0 fw-700 text-main h6 text-uppercase tracking-wider">Session Summary</h5>
+        <!-- Quick Action -->
+        <div class="col-xl-4 col-md-12">
+            <div class="dashboard-card-premium h-100 bg-primary bg-opacity-10 border-primary border-opacity-25">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-primary text-white p-2 rounded-3 me-3 shadow-sm">
+                        <i data-lucide="plus-circle"></i>
+                    </div>
+                    <h6 class="mb-0 fw-800 text-main">Quick Action</h6>
                 </div>
-                
-                <ul class="list-unstyled mb-0">
-                    <li class="d-flex align-items-center justify-content-between p-3 bg-main rounded-3 mb-3 border border-base">
-                        <div class="d-flex align-items-center">
-                            <i data-lucide="check" class="text-success me-3" style="width: 18px;"></i>
-                            <span class="small fw-700 text-main">Days Present</span>
+                <p class="small text-muted mb-4 fw-500">Need help with academics or facilities? Report your concerns
+                    instantly.</p>
+                <a href="{% url 'submit_grievance' %}" class="btn btn-primary w-100 py-3 fw-700 rounded-3 shadow-sm">
+                    Submit Grievance
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Detailed Analytics -->
+    <div class="row g-4">
+        <!-- Attendance Breakdown Chart -->
+        <div class="col-lg-7">
+            <div class="dashboard-card-premium h-100">
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <h5 class="mb-0 fw-800 text-main">Attendance Breakdown</h5>
+                    <a href="{% url 'view_attendance' %}"
+                        class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-700">
+                        Detailed View
+                    </a>
+                </div>
+
+
+
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-7">
+                        <div class="position-relative" style="height: 220px;">
+                            <canvas id="studentAttendanceChart"></canvas>
+                            <div class="position-absolute top-50 start-50 translate-middle text-center">
+                                <div class="h3 fw-800 text-main mb-0">{{ attendance_percentage }}%</div>
+                                <div class="small text-muted fw-700">Overall</div>
+                            </div>
                         </div>
-                        <span class="fw-800 text-main">{{ present_count }}</span>
-                    </li>
-                    <li class="d-flex align-items-center justify-content-between p-3 bg-main rounded-3 mb-3 border border-base">
-                        <div class="d-flex align-items-center">
-                            <i data-lucide="x" class="text-danger me-3" style="width: 18px;"></i>
-                            <span class="small fw-700 text-main">Days Absent</span>
-                        </div>
-                        <span class="fw-800 text-main">{{ absent_count }}</span>
-                    </li>
-                    <li class="d-flex align-items-center justify-content-between p-3 bg-main rounded-3 border border-base">
-                        <div class="d-flex align-items-center">
-                            <i data-lucide="activity" class="text-primary me-3" style="width: 18px;"></i>
-                            <span class="small fw-700 text-main">Total Records</span>
-                        </div>
-                        <span class="fw-800 text-main">{{ total_count }}</span>
-                    </li>
-                </ul>
-                
-                <div class="alert bg-primary bg-opacity-5 border-0 text-primary rounded-3 mt-5 p-4 mb-0">
-                    <div class="d-flex gap-3">
-                        <i data-lucide="info" class="mt-1" style="width: 18px;"></i>
-                        <div>
-                            <div class="fw-800 small mb-1">Academic Info</div>
-                            <div class="small fw-500 opacity-75">Maintain at least 75% attendance to stay eligible for final examinations.</div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="ps-md-4 mt-4 mt-md-0">
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-700 text-muted">Present</span>
+                                    <span class="small fw-800 text-main">{{ present_count }}</span>
+                                </div>
+                                <div class="progress progress-thin">
+                                    <div class="progress-bar bg-primary" style="width: {{ attendance_percentage }}%">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="small fw-700 text-muted">Absent</span>
+                                    <span class="small fw-800 text-main">{{ absent_count }}</span>
+                                </div>
+                                <div class="progress progress-thin">
+                                    <div class="progress-bar bg-light" style="width: 20%"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- NEW: Weekly Presence Strip & Metrics -->
+                <div class="pt-4 border-top border-base">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-8">
+                            <div class="small fw-800 text-main mb-3 text-uppercase tracking-wider">Weekly Presence Map
+                            </div>
+                            <div
+                                class="d-flex justify-content-between align-items-center bg-main p-3 rounded-3 border border-base">
+                                {% for day in weekly_map %}
+                                <div class="text-center">
+                                    <div class="small text-muted fw-700 mb-2" style="font-size: 0.65rem;">{{ day.day }}
+                                    </div>
+                                    <div class="presence-dot {% if day.status == 'present' %}bg-success{% elif day.status == 'absent' %}bg-danger{% else %}bg-base{% endif %} shadow-sm {% if day.is_today %}active-today{% endif %}"
+                                        style="width: 14px; height: 14px; border-radius: 50%; margin: 0 auto;"
+                                        title="{{ day.status|title }}"></div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="small fw-800 text-main mb-3 text-uppercase tracking-wider">Streak</div>
+                            <div
+                                class="p-3 bg-primary bg-opacity-10 border border-primary border-opacity-10 rounded-3 text-center">
+                                <div class="h4 fw-900 text-primary mb-0">
+                                    <i data-lucide="zap" class="me-1" style="width: 20px;"></i>{{ streak }}
+                                </div>
+                                <div class="small text-muted fw-700" style="font-size: 0.65rem;">Days Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subjects & Insights -->
+        <div class="col-lg-5">
+            <div class="dashboard-card-premium h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0 fw-800 text-main">Subject Tracking</h5>
+                    <i data-lucide="more-horizontal" class="text-muted"></i>
+                </div>
+
+                <div class="subject-list mb-4" style="max-height: 250px; overflow-y: auto;">
+                    {% for sub in subject_stats %}
+                    <div class="subject-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-700 text-main small">{{ sub.name }}</span>
+                            <span class="badge bg-{{ sub.status }}-soft text-{{ sub.status }}">{{ sub.pct }}%</span>
+                        </div>
+                        <div class="progress progress-thin">
+                            <div class="progress-bar bg-{{ sub.status }}" style="width: {{ sub.pct }}%"></div>
+                        </div>
+                    </div>
+
+                    {% empty %}
+                    <div class="text-center py-4 text-muted small italic">No subject data available</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Strategic Insight Box -->
+                <div
+                    class="insight-box mt-auto {% if status == 'success' %}success{% elif status == 'danger' %}danger{% else %}warning{% endif %} mb-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-{{ status }} mt-1">
+                            <i data-lucide="zap" style="width:20px;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-800 small text-main mb-1">Academic Insight</div>
+                            <p class="small text-muted mb-0 leading-relaxed">
+                                {% if status == 'success' %}
+                                Your attendance is currently <strong>{{ attendance_percentage }}%</strong>. You are
+                                safely above the regulation threshold. Keep it up!
+                                {% else %}
+                                You need to attend at least <strong>{{ classes_to_75 }} more</strong> consecutive
+                                classes to reach the mandatory <strong>75%</strong> threshold.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity List -->
+                <div class="pt-4 border-top border-base">
+                    <h6 class="small fw-800 text-main mb-3 text-uppercase tracking-wider">Recent Activity</h6>
+                    <div class="recent-list">
+                        {% for att in recent_activity %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="small fw-700 text-main">{% firstof att.session.subject.name att.subject_old
+                                    %}</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">{{ att.date|date:"D, d M" }}</div>
+                            </div>
+                            <span
+                                class="badge {% if att.status == 'Present' %}bg-success-soft text-success{% else %}bg-danger-soft text-danger{% endif %} rounded-pill px-2 py-1"
+                                style="font-size: 0.6rem;">
+                                {{ att.status }}
+                            </span>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-2 text-muted small">No recent logs</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
+
+
 {% block extra_js %}
 <script>
     const ctx = document.getElementById('studentAttendanceChart').getContext('2d');
-    
+
     new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['Present', 'Absent'],
             datasets: [{
                 data: [{{ present_count }}, {{ absent_count }}],
-                backgroundColor: ['#4f46e5', '#e2e8f0'],
-                borderColor: '#ffffff',
-                borderWidth: 6,
-                hoverOffset: 15
-            }]
+        backgroundColor: ['#3B82F6', '#F1F5F9'],
+        borderColor: 'transparent',
+        borderWidth: 0,
+        hoverOffset: 10
+    }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '80%',
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#64748b',
-                        padding: 30,
-                        usePointStyle: true,
-                        font: { family: 'Inter', size: 12, weight: '700' }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: '#0f172a',
-                    padding: 15,
-                    cornerRadius: 8,
-                    titleFont: { family: 'Inter', size: 14, weight: 'bold' },
-                    bodyFont: { family: 'Inter', size: 12 },
-                    displayColors: false
-                }
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '85%',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#1E293B',
+                padding: 12,
+                cornerRadius: 12,
+                titleFont: { family: 'Inter', size: 12, weight: 'bold' },
+                bodyFont: { family: 'Inter', size: 12 },
+                displayColors: false
             }
         }
+    }
     });
 
-    lucide.createIcons();
+    // Auto-fill via 3-second polling
+    setInterval(() => {
+        fetch('/get-code/')
+        .then(res => res.json())
+        .then(data => {
+            const codeInput = document.getElementById("attendanceCode");
+            if (codeInput && data.code) {
+                codeInput.value = data.code;
+            }
+        })
+        .catch(err => console.error("Polling error:", err));
+    }, 3000);
 </script>
 {% endblock %}

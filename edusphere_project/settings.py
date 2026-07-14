@@ -14,6 +14,7 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'daphne',
     'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'portal',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +56,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'edusphere_project.wsgi.application'
+ASGI_APPLICATION = 'edusphere_project.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # Use Neon DB if URL is available, otherwise fallback to SQLite for local development
@@ -162,13 +171,3 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success"
     }
 }
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-if not User.objects.filter(username="admin").exists():
-    User.objects.create_superuser(
-        username="admin",
-        email="admin@example.com",
-        password="Admin@1234"
-    )

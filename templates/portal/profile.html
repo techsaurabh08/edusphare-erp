@@ -1,0 +1,129 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}User Profile - EduSphere{% endblock %}
+
+{% block page_title %}Account Overview{% endblock %}
+{% block breadcrumb %}Profile{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <div class="row g-4">
+        <!-- Sidebar: Basic Info & Avatar -->
+        <div class="col-lg-4">
+            <div class="dashboard-card-premium text-center p-5 mb-4">
+                <div class="avatar-xl bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center fw-900" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                    {{ profile_user.username|first|upper }}
+                </div>
+                <h4 class="fw-800 text-main mb-1">{{ profile_user.get_full_name|default:profile_user.username }}</h4>
+                <div class="text-muted small fw-700 mb-4">
+                    {% if profile_user.is_superuser %}Campus Admin{% elif is_teacher %}Faculty Member{% else %}Active Student{% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <span class="badge bg-success-soft text-success rounded-pill px-3 py-1 fw-700">Online</span>
+                    <span class="badge border border-base text-muted rounded-pill px-3 py-1 fw-700">Verified</span>
+                </div>
+
+                <div class="pt-4 border-top border-base text-start">
+                    <div class="mb-3">
+                        <div class="small fw-700 text-muted text-uppercase tracking-wider mb-1" style="font-size: 0.65rem;">Email Address</div>
+                        <div class="fw-700 text-main small">{{ profile_user.email|default:"Not Provided" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="small fw-700 text-muted text-uppercase tracking-wider mb-1" style="font-size: 0.65rem;">Username</div>
+                        <div class="fw-700 text-main small">@{{ profile_user.username }}</div>
+                    </div>
+                    <div class="mb-0">
+                        <div class="small fw-700 text-muted text-uppercase tracking-wider mb-1" style="font-size: 0.65rem;">Joined On</div>
+                        <div class="fw-700 text-main small">{{ profile_user.date_joined|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="dashboard-card-premium p-4">
+                <h6 class="fw-800 text-main mb-4 text-uppercase tracking-wider small">Activity Metrics</h6>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="p-3 bg-primary bg-opacity-10 rounded-3 text-center border border-primary border-opacity-10">
+                            <div class="h4 fw-900 text-primary mb-0">{{ attendance_pct }}%</div>
+                            <div class="text-muted fw-700" style="font-size: 0.6rem;">Attendance</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-main rounded-3 text-center border border-base">
+                            <div class="h4 fw-900 text-main mb-0">{{ grievances_count }}</div>
+                            <div class="text-muted fw-700" style="font-size: 0.6rem;">Requests</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content: Academic Details -->
+        <div class="col-lg-8">
+            <div class="dashboard-card-premium p-5 mb-4">
+                <h5 class="fw-800 text-main mb-5 d-flex align-items-center gap-3">
+                    <i data-lucide="book-open" class="text-primary"></i> Academic Credentials
+                </h5>
+                
+                <div class="row g-5">
+                    {% if is_student and student_profile %}
+                    <div class="col-md-6">
+                        <div class="p-4 bg-surface border border-base rounded-4">
+                            <div class="small fw-700 text-muted text-uppercase tracking-wider mb-2" style="font-size: 0.65rem;">Enrolled Class</div>
+                            <div class="h5 fw-800 text-main mb-0">{{ student_profile.student_class }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-4 bg-surface border border-base rounded-4">
+                            <div class="small fw-700 text-muted text-uppercase tracking-wider mb-2" style="font-size: 0.65rem;">University Roll No.</div>
+                            <div class="h5 fw-800 text-main mb-0">{{ student_profile.roll_number }}</div>
+                        </div>
+                    </div>
+                    {% elif is_teacher and teacher_profile %}
+                    <div class="col-md-12">
+                        <div class="p-4 bg-surface border border-base rounded-4 text-center">
+                            <div class="small fw-700 text-muted text-uppercase tracking-wider mb-2" style="font-size: 0.65rem;">Department / faculty</div>
+                            <div class="h4 fw-800 text-main mb-0">{{ teacher_profile.department|default:"Institutional Faculty" }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12">
+                        <div class="alert bg-main border border-base text-muted small fw-600 rounded-3 text-center py-4">
+                            Institutional academic profile pending configuration.
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mt-5 pt-4 border-top border-base">
+                    <h6 class="small fw-800 text-main mb-4 text-uppercase tracking-wider">Course Enrollment</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for sub in enrolled_subjects %}
+                        <div class="px-4 py-2 bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill small fw-800">
+                            {{ sub.name }}
+                        </div>
+                        {% empty %}
+                        <div class="text-muted small italic">No active courses found.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card-premium p-5 bg-primary text-white border-0 shadow-lg">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="fw-800 mb-2">Account Security</h5>
+                        <p class="mb-0 opacity-75 small fw-500">Keep your credentials safe. Regularly update your password to maintain campus portal security.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                        <button class="btn btn-light fw-800 px-4 py-3 rounded-3 shadow-none">Manage Security</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

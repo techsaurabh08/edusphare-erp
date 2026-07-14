@@ -10,8 +10,18 @@
         <div class="form-container sign-up-container">
             <form method="post" action="{% url 'signup' %}" id="signup-form">
                 {% csrf_token %}
-                <h2 class="fw-800 mb-4">Create Account</h2>
-                
+                <div class="role-switcher-premium mb-4">
+                    <input type="radio" name="user_role" value="student" id="role-student" checked onchange="toggleFields('student')">
+                    <label for="role-student" class="role-btn">
+                        <i data-lucide="user"></i> Student
+                    </label>
+                    
+                    <input type="radio" name="user_role" value="teacher" id="role-teacher" onchange="toggleFields('teacher')">
+                    <label for="role-teacher" class="role-btn">
+                        <i data-lucide="shield-check"></i> Teacher
+                    </label>
+                </div>
+
                 <div class="input-group-premium">
                     <input type="text" name="full_name" placeholder="Full Name" required />
                 </div>
@@ -21,17 +31,20 @@
                 <div class="input-group-premium">
                     <input type="email" name="email" placeholder="Email Address" required />
                 </div>
-                <div class="row g-2 w-100 mb-3">
+                
+                <div id="student-only-fields" class="row g-2 w-100 mb-3">
                     <div class="col-6">
-                        <input type="text" name="student_class" placeholder="Class" required />
+                        <input type="text" name="student_class" id="student_class" placeholder="Class" required />
                     </div>
                     <div class="col-6">
-                        <input type="text" name="roll_number" placeholder="Roll No" required />
+                        <input type="text" name="roll_number" id="roll_number" placeholder="Roll No" required />
                     </div>
                 </div>
+
                 <div class="input-group-premium">
                     <input type="password" name="password" placeholder="Password" required />
                 </div>
+
                 
                 <button type="submit" class="btn btn-accent px-5 py-3 mt-3 w-100">
                     Sign Up
@@ -48,15 +61,21 @@
         <div class="form-container sign-in-container">
             <form method="post" action="{% url 'login' %}" id="login-form">
                 {% csrf_token %}
-                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle mb-4">
-                    <i data-lucide="graduation-cap" style="width: 40px; height: 40px;"></i>
+                <div class="role-switcher-premium mb-4">
+                    <input type="radio" name="login_role" value="student" id="login-role-student" checked>
+                    <label for="login-role-student" class="role-btn">
+                        <i data-lucide="user"></i> Student
+                    </label>
+                    <input type="radio" name="login_role" value="teacher" id="login-role-teacher">
+                    <label for="login-role-teacher" class="role-btn">
+                        <i data-lucide="shield-check"></i> Teacher
+                    </label>
                 </div>
-                <h2 class="fw-800 mb-2">Welcome Back</h2>
-                <p class="text-muted mb-4">Enter your credentials to access the portal</p>
-                
+
                 <div class="input-group-premium">
                     <input type="text" name="username" placeholder="Username" required />
                 </div>
+
                 <div class="input-group-premium">
                     <input type="password" name="password" placeholder="Password" required />
                 </div>
@@ -113,6 +132,23 @@
             container.classList.remove("mobile-sign-up");
         }
     }
+
+    function toggleFields(role) {
+        const studentFields = document.getElementById('student-only-fields');
+        const classInput = document.getElementById('student_class');
+        const rollInput = document.getElementById('roll_number');
+        
+        if (role === 'teacher') {
+            studentFields.style.display = 'none';
+            classInput.removeAttribute('required');
+            rollInput.removeAttribute('required');
+        } else {
+            studentFields.style.display = 'flex';
+            classInput.setAttribute('required', '');
+            rollInput.setAttribute('required', '');
+        }
+    }
+
 
     // Auto-switch to signup if redirected back from signup logic
     window.onload = () => {

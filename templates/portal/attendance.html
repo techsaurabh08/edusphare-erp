@@ -1,0 +1,106 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block title %}Attendance History - EduSphere{% endblock %}
+
+{% block page_title %}Attendance History{% endblock %}
+{% block breadcrumb %}Attendance{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in">
+    <!-- Summary Header Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100 border-{{ status }} border-opacity-25" style="border-left: 4px solid var(--{{ status }}) !important;">
+                <div class="stat-label mb-1">Overall Percentage</div>
+                <div class="stat-number text-{{ status }}">{{ attendance_percentage }}%</div>
+                <div class="small fw-700 mt-2">{{ status_label }}</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100">
+                <div class="stat-label mb-1">Total Classes</div>
+                <div class="stat-number text-main">{{ total_count }}</div>
+                <div class="small text-muted fw-600 mt-2">Recorded Sessions</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100">
+                <div class="stat-label mb-1 text-success">Present</div>
+                <div class="stat-number text-success">{{ present_count }}</div>
+                <div class="small text-muted fw-600 mt-2">Days Attended</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100">
+                <div class="stat-label mb-1 text-danger">Absent</div>
+                <div class="stat-number text-danger">{{ absent_count }}</div>
+                <div class="small text-muted fw-600 mt-2">Classes Missed</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Attendance Table -->
+    <div class="dashboard-card-premium p-0 border-0 shadow-sm overflow-hidden">
+        <div class="px-4 py-4 border-bottom border-base d-flex justify-content-between align-items-center bg-surface">
+            <div>
+                <h5 class="mb-0 fw-800 text-main">Complete History</h5>
+                <p class="small text-muted mb-0">List of all recorded attendance sessions</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-700">
+                    <i data-lucide="filter" class="me-1" style="width: 14px;"></i> Filter
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-responsive-saas">
+            <table class="saas-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Date & Session</th>
+                        <th>Subject</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for att in all_attendances %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-700 text-main small">{{ att.date|date:"d M Y" }}</div>
+                            <div class="text-muted" style="font-size: 0.65rem;">{{ att.date|date:"l" }}</div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 text-primary p-2 rounded-2 me-3 d-none d-md-block">
+                                    <i data-lucide="book" style="width:14px;"></i>
+                                </div>
+                                <span class="fw-700 text-main small">{% firstof att.session.subject.name att.subject_old %}</span>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge {% if att.status == 'Present' %}bg-success-soft text-success{% else %}bg-danger-soft text-danger{% endif %} rounded-pill px-3 py-1 fw-700" style="font-size: 0.65rem;">
+                                {{ att.status }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-link text-muted p-0">
+                                <i data-lucide="info" style="width: 18px;"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <i data-lucide="inbox" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                            <p class="text-muted">No attendance records found yet.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

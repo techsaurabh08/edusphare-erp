@@ -3,99 +3,310 @@
 
 {% block title %}Teacher Dashboard - EduSphere{% endblock %}
 
-{% block page_title %}Academic Overview{% endblock %}
+{% block page_title %}Teacher Dashboard{% endblock %}
 {% block breadcrumb %}Dashboard{% endblock %}
 
 {% block content %}
 <div class="animate-fade-in">
-    <!-- Section: Stats -->
+    <!-- Quick Stats Cards -->
     <div class="row g-4 mb-5">
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="stat-pill bg-primary bg-opacity-10 text-primary me-3">
-                        <i data-lucide="users"></i>
-                    </div>
-                    <span class="stat-label">Assigned Students</span>
-                </div>
-                <div class="stat-number">42</div>
-                <div class="mt-2 small text-muted fw-600">Active Registry</div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100 border-start border-4 border-primary">
+                <div class="stat-label mb-1">Total Classes Taken</div>
+                <div class="stat-number text-primary">{{ total_classes }}</div>
+                <div class="small text-muted fw-600 mt-2">Unique Sessions</div>
             </div>
         </div>
-        
-        <div class="col-xl-4 col-md-6">
-            <div class="dashboard-card h-100">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="stat-pill bg-success bg-opacity-10 text-success me-3">
-                        <i data-lucide="calendar"></i>
-                    </div>
-                    <span class="stat-label">Attendance Rate</span>
-                </div>
-                <div class="stat-number">94.2%</div>
-                <div class="mt-2 small text-success fw-600">
-                    <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i> High Engagement
-                </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100 border-start border-4 border-info">
+                <div class="stat-label mb-1">Total Students</div>
+                <div class="stat-number text-info">{{ total_students }}</div>
+                <div class="small text-muted fw-600 mt-2">Active Registry</div>
             </div>
         </div>
-
-        <div class="col-xl-4 col-md-12">
-            <div class="dashboard-card h-100 bg-primary text-white border-0 shadow-sm">
-                <div class="d-flex align-items-center mb-4">
-                    <div class="bg-white bg-opacity-20 p-2 rounded-2 me-3">
-                        <i data-lucide="zap"></i>
-                    </div>
-                    <h6 class="mb-0 fw-700">Quick Actions</h6>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="{% url 'mark_attendance' %}" class="btn btn-light btn-sm flex-fill fw-700 py-2">Mark Attendance</a>
-                    <a href="{% url 'view_grievances' %}" class="btn btn-outline-light btn-sm flex-fill fw-700 py-2">Monitor Case</a>
-                </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100 border-start border-4 border-success">
+                <div class="stat-label mb-1">Avg Attendance</div>
+                <div class="stat-number text-success">{{ avg_attendance }}%</div>
+                <div class="small text-muted fw-600 mt-2">System Wide</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card-premium h-100 border-start border-4 border-danger">
+                <div class="stat-label mb-1">Pending Grievances</div>
+                <div class="stat-number text-danger">{{ pending_grievances }}</div>
+                <div class="small text-muted fw-600 mt-2">Needs Resolution</div>
             </div>
         </div>
     </div>
 
-    <!-- Section: Student Registry -->
-    <div class="dashboard-card">
-        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-base">
-            <h5 class="mb-0 fw-700 text-main h6 text-uppercase tracking-wider">Student Registry</h5>
-            <button class="btn btn-link text-primary p-0 fw-700 text-decoration-none small">Export CSV</button>
-        </div>
-        
-        <div class="table-responsive">
-            <table class="saas-table">
-                <thead>
-                    <tr>
-                        <th>Student Name</th>
-                        <th>Identifier</th>
-                        <th>Email</th>
-                        <th class="text-end">Reporting</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in students %}
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-sm bg-primary bg-opacity-10 text-primary rounded-pill fw-700 d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 0.75rem;">
-                                    {{ student.username|first|upper }}
-                                </div>
-                                <span class="fw-700 text-main">{{ student.get_full_name|default:student.username }}</span>
+    <div class="row g-5">
+        <!-- Main Column -->
+        <div class="col-lg-8">
+            <!-- Attendance Trend Chart -->
+            <div class="dashboard-card-premium mb-5 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0 fw-800 text-main">Attendance Trend</h5>
+                    <span class="badge bg-main border border-base text-muted rounded-pill px-3 py-1 fw-700">Last 7 Sessions</span>
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Subject-wise Overview -->
+            <div class="dashboard-card-premium mb-5 p-4">
+                <h5 class="mb-4 fw-800 text-main">Class-wise Overview</h5>
+                <div class="row g-4">
+                    {% for sub in subject_stats %}
+                    <div class="col-md-6">
+                        <div class="p-3 bg-main rounded-3 border border-base">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-700 text-main small">{{ sub.name }}</span>
+                                <span class="small fw-800 text-primary">{{ sub.pct }}%</span>
                             </div>
-                        </td>
-                        <td><span class="text-muted fw-600">ID: #{{ student.id|add:1000 }}</span></td>
-                        <td class="text-muted">{{ student.email|default:"no-email@campus.io" }}</td>
-                        <td class="text-end">
-                            <button class="btn btn-outline-secondary btn-sm border-base px-3 fw-600">Record</button>
-                        </td>
-                    </tr>
+                            <div class="progress progress-thin">
+                                <div class="progress-bar" style="width: {{ sub.pct }}%"></div>
+                            </div>
+                        </div>
+                    </div>
                     {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center py-5 text-muted opacity-50">No students found in your registry.</td>
-                    </tr>
+                    <div class="col-12 text-center py-4 text-muted small">No subject data handled yet</div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
+
+            <!-- Recent Student Registry -->
+            <div class="dashboard-card-premium p-0 border-0 shadow-sm overflow-hidden">
+                <div class="px-4 py-4 border-bottom border-base d-flex justify-content-between align-items-center bg-surface">
+                    <h5 class="mb-0 fw-800 text-main">Student Registry</h5>
+                    <a href="#" class="btn btn-sm btn-link text-primary fw-700 text-decoration-none">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-main border-bottom border-base">
+                            <tr>
+                                <th class="px-4 py-3 small fw-800 text-muted">Student</th>
+                                <th class="px-4 py-3 small fw-800 text-muted">Role/ID</th>
+                                <th class="px-4 py-3 small fw-800 text-muted text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr class="border-bottom border-base">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary bg-opacity-10 text-primary rounded-circle fw-800 d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                            {{ student.username|first|upper }}
+                                        </div>
+                                        <div class="fw-700 text-main">{{ student.get_full_name|default:student.username }}</div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 small text-muted">STD-{{ student.id|add:1000 }}</td>
+                                <td class="px-4 py-3 text-end">
+                                    <button class="btn btn-clean p-1" title="View Profile">
+                                        <i data-lucide="external-link" style="width: 16px;"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <!-- Session Management Panel -->
+            {% if active_session %}
+            <div class="dashboard-card-premium mb-4 p-4 border-0 shadow-lg bg-surface" style="border-left: 5px solid var(--primary) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h6 class="fw-800 text-primary mb-1 text-uppercase tracking-wider small">Active Session: {{ active_session.subject.name }}</h6>
+                        <p class="text-muted small mb-0">Started at {{ active_session.created_at|date:"H:i" }}</p>
+                    </div>
+                    <div class="text-end">
+                        <div id="countdown-timer" class="stat-number text-main" style="font-size: 1.5rem;" data-expiry="{{ active_session.expires_at|date:'c' }}">--:--</div>
+                        <span class="small text-muted fw-700">Time Left</span>
+                    </div>
+                </div>
+                
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-5">
+                        <div class="p-3 bg-main rounded-3 border border-base text-center">
+                            <div class="small text-muted fw-700 mb-1">SESSION CODE</div>
+                            <div class="h2 mb-0 fw-900 text-primary tracking-widest">{{ active_session.session_code }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="stat-number text-main" style="font-size: 1.5rem;">{{ active_session.records.count }}</div>
+                            <span class="small text-muted fw-700">Checked In</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="{% url 'close_attendance_session' active_session.id %}" class="btn btn-danger w-100 py-3 fw-800 rounded-3 shadow-sm">
+                            <i data-lucide="power" class="me-2" style="width: 18px;"></i> Close Session
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="dashboard-card-premium mb-4 p-4 border-0 shadow-sm bg-main text-center">
+                <h6 class="fw-800 text-main mb-4 text-uppercase tracking-wider small">Start New Attendance Session</h6>
+                <a href="/create-session/" class="btn btn-success py-3 px-4 fw-800 rounded-3 w-100 shadow-sm">
+                    Generate Attendance Code
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Quick Actions Panel -->
+            <div class="dashboard-card-premium mb-4 p-4 bg-primary text-white border-0">
+                <h6 class="fw-800 mb-4 opacity-75 text-uppercase tracking-wider small">Quick Tasks</h6>
+                <div class="d-grid gap-3">
+                    <a href="{% url 'mark_attendance' %}" class="btn btn-light fw-800 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                        <i data-lucide="calendar-check" style="width: 20px;"></i> Mark Attendance
+                    </a>
+                    <a href="{% url 'export_attendance_csv' %}" class="btn btn-primary-clean bg-white bg-opacity-10 text-white border-white border-opacity-25 fw-800 py-3 d-flex align-items-center justify-content-center gap-2">
+                        <i data-lucide="download" style="width: 20px;"></i> Export Analytics
+                    </a>
+                    <a href="{% url 'view_grievances' %}" class="btn btn-primary-clean text-white border-white border-opacity-25 fw-800 py-3 d-flex align-items-center justify-content-center gap-2">
+                        <i data-lucide="shield-alert" style="width: 20px;"></i> Check Grievances
+                    </a>
+                </div>
+            </div>
+
+            <!-- Smart Alerts / Insights -->
+            <div class="dashboard-card-premium mb-4 p-4">
+                <h6 class="fw-800 text-main mb-4 text-uppercase tracking-wider small d-flex align-items-center gap-2">
+                    <i data-lucide="alert-circle" class="text-danger" style="width: 16px;"></i> Needs Attention
+                </h6>
+                {% for perf in student_performance %}
+                <div class="p-3 mb-3 bg-danger bg-opacity-10 border border-danger border-opacity-10 rounded-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-700 text-main small">{{ perf.name }}</span>
+                        <span class="badge bg-danger text-white rounded-pill">{{ perf.pct }}%</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-4">
+                    <i data-lucide="check-circle" class="text-success mb-2" style="width: 32px; height: 32px;"></i>
+                    <p class="small text-muted mb-0">All students meeting goals</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Recent Grievances -->
+            <div class="dashboard-card-premium p-4">
+                <h6 class="fw-800 text-main mb-4 text-uppercase tracking-wider small">Recent Grievances</h6>
+                {% for g in recent_grievances %}
+                <div class="mb-4 pb-3 border-bottom border-base last-no-border">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="fw-700 text-main small">{{ g.student.username }}</div>
+                        <span class="badge {% if g.status == 'Pending' %}bg-warning-soft text-warning{% else %}bg-success-soft text-success{% endif %} rounded-pill" style="font-size: 0.65rem;">
+                            {{ g.status }}
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-0 text-truncate">{{ g.message }}</p>
+                    <div class="mt-2">
+                        <a href="{% url 'grievance_detail' g.id %}" class="small text-primary fw-700 text-decoration-none">Review Case &rarr;</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    // Attendance Trend Chart
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    label: 'Attendance Rate (%)',
+                    data: {{ chart_data|safe }},
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3B82F6',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1E293B',
+                        titleColor: '#F1F5F9',
+                        bodyColor: '#F1F5F9',
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) { return context.parsed.y + '% Attendance'; }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                        ticks: { color: '#94A3B8', font: { weight: '600' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#94A3B8', font: { weight: '600' } }
+                    }
+                }
+            }
+        });
+    }
+
+    // Countdown Timer Logic
+    const timerDisplay = document.getElementById('countdown-timer');
+    if (timerDisplay) {
+        const expiryDate = new Date(timerDisplay.dataset.expiry).getTime();
+        
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const distance = expiryDate - now;
+            
+            if (distance < 0) {
+                timerDisplay.innerHTML = "00:00";
+                timerDisplay.classList.add('text-danger');
+                clearInterval(timerInterval);
+                // Optionally auto-reload to show session closed UI
+                // location.reload();
+                return;
+            }
+            
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            timerDisplay.innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (minutes < 2) {
+                timerDisplay.classList.add('text-danger');
+            }
+        };
+        
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+    }
+</script>
+{% endblock %}
+
