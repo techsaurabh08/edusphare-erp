@@ -1,4 +1,4 @@
-Django==6.0.7
+Django==5.2.6
 gunicorn
 daphne
 channels
